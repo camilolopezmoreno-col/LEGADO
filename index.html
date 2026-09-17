@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>El camino químico del enamoramiento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#070a10;
+    --deep:#0d121c;
+    --panel: rgba(20, 27, 40, 0.62);
+    --panel-solid:#141b28;
+    --ink:#edeef2;
+    --ink-dim:#909aad;
+    --ink-faint:#5c6478;
+    --synapse:#59d6c4;
+    --synapse-dim: rgba(89,214,196,0.35);
+    --dopamine:#e8a659;
+    --dopamine-dim: rgba(232,166,89,0.35);
+    --line: rgba(237,238,242,0.10);
+    --line-strong: rgba(237,238,242,0.22);
+    --font-display: 'Fraunces', serif;
+    --font-body: 'Inter', sans-serif;
+    --ease: cubic-bezier(.22,.68,.16,1);
+  }
+
+  *{ box-sizing: border-box; }
+  html,body{ height:100%; margin:0; padding:0; }
+  body{
+    background: var(--void);
+    color: var(--ink);
+    font-family: var(--font-body);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  a, button, input, [tabindex]{
+    font-family: inherit;
+  }
+
+  :focus-visible{
+    outline: 2px solid var(--synapse);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+
+  #bg-canvas{
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  .vignette{
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(13,18,28,0) 0%, rgba(7,10,16,0.75) 78%),
+      radial-gradient(ellipse at 50% 100%, rgba(7,10,16,0.55) 0%, rgba(7,10,16,0) 60%);
+  }
+
+  .deck{
+    position: relative;
+    z-index: 2;
+    height: 100vh;
+    height: 100dvh;
+    width: 100vw;
+    overflow: hidden;
+  }
+
+  .deck-track{
+    display: flex;
+    height: 100%;
+    width: 400%;
+    transition: transform 0.85s var(--ease);
+    will-change: transform;
+  }
+
+  .slide{
+    position: relative;
+    width: 25%;
+    height: 100%;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: clamp(24px, 6vw, 96px);
+    overflow-y: auto;
+  }
+
+  .slide-inner{
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ---------- SLIDE 1 : INTRO ---------- */
+
+  .slide--intro .slide-inner{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: clamp(20px, 4vw, 40px);
+  }
+
+  .intro-title{
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-style: normal;
+    font-size: clamp(2rem, 5.6vw, 4.1rem);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    max-width: 16ch;
+    margin: 0;
+    color: var(--ink);
+  }
+
+  #hero-image{
+    width: min(78vw, 480px);
+    aspect-ratio: 16 / 11;
+    position: relative;
+    display: block;
+  }
+
+  #hero-image svg{
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+  }
+
+  .intro-subtitle{
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: clamp(0.98rem, 1.7vw, 1.25rem);
+    line-height: 1.6;
+    color: var(--ink-dim);
+    max-width: 46ch;
+    margin: 0;
+  }
+
+  /* ---------- SLIDE 2 : REWARD LOOP ---------- */
+
+  .slide--loop .slide-inner{
+    display: grid;
+    grid-template-columns: minmax(0,1fr) minmax(0,1.15fr);
+    gap: clamp(20px, 4vw, 64px);
+    align-items: center;
+    width: 100%;
+  }
+
+  .loop-heading h2{
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.6rem, 3vw, 2.5rem);
+    line-height: 1.15;
+    margin: 0 0 14px 0;
+  }
+
+  .loop-heading p{
+    color: var(--ink-dim);
+    font-size: 0.98rem;
+    line-height: 1.65;
+    max-width: 38ch;
+    margin: 0 0 22px 0;
+    font-weight: 300;
+  }
+
+  .loop-note{
+    border-left: 2px solid var(--dopamine-dim);
+    padding-left: 14px;
+    font-size: 0.88rem;
+    color: var(--ink-dim);
+    line-height: 1.6;
+    max-width: 36ch;
+  }
+
+  .loop-note strong{
+    color: var(--dopamine);
+    font-weight: 500;
+  }
+
+  .loop-chain{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-height: 74vh;
+    overflow-y: auto;
+    padding-right: 6px;
+  }
+
+  .loop-chain::-webkit-scrollbar{ width: 4px; }
+  .loop-chain::-webkit-scrollbar-thumb{ background: var(--line-strong); border-radius: 4px; }
+
+  .loop-stage{
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 12px 4px;
+  }
+
+  .loop-stage::before{
+    content:"";
+    position: absolute;
+    left: 15px;
+    top: -2px;
+    width: 1px;
+    height: calc(100% + 4px);
+    background: var(--line);
+  }
+
+  .loop-stage:first-child::before{ top: 50%; }
+  .loop-stage:last-child::before{ height: calc(50% + 4px); }
+
+  .loop-dot{
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--panel-solid);
+    border: 1px solid var(--line-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 4px;
+    transition: border-color 0.4s var(--ease), box-shadow 0.4s var(--ease), background 0.4s var(--ease);
+  }
+
+  .loop-dot span{
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ink-faint);
+    transition: background 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  }
+
+  .loop-stage.is-active .loop-dot{
+    border-color: var(--synapse);
+    box-shadow: 0 0 0 4px rgba(89,214,196,0.12);
+  }
+
+  .loop-stage.is-active .loop-dot span{
+    background: var(--synapse);
+    box-shadow: 0 0 10px 2px var(--synapse-dim);
+  }
+
+  .loop-stage-btn{
+    all: unset;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    padding: 6px 0;
+  }
+
+  .loop-stage-head{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .loop-stage-name{
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 1.6vw, 1.28rem);
+    font-weight: 400;
+    color: var(--ink);
+    transition: color 0.3s var(--ease);
+  }
+
+  .loop-stage.is-active .loop-stage-name{ color: var(--synapse); }
+
+  .loop-stage-toggle{
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    transform: rotate(0deg);
+    transition: transform 0.35s var(--ease);
+  }
+
+  .loop-stage.is-active .loop-stage-toggle{ transform: rotate(45deg); color: var(--synapse); }
+
+  .loop-stage-panel{
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.45s var(--ease), opacity 0.35s var(--ease);
+    opacity: 0;
+  }
+
+  .loop-stage.is-active .loop-stage-panel{
+    max-height: 140px;
+    opacity: 1;
+  }
+
+  .loop-stage-panel p{
+    margin: 8px 0 4px 0;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--ink-dim);
+    font-weight: 300;
+    max-width: 46ch;
+  }
+
+  /* ---------- SLIDE 3 : NOVELTY / BONDING ---------- */
+
+  .slide--compare .slide-inner{
+    width: 100%;
+  }
+
+  .compare-heading{
+    text-align: center;
+    margin-bottom: clamp(18px, 3vw, 30px);
+  }
+
+  .compare-heading h2{
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 2.8vw, 2.3rem);
+    margin: 0 0 8px 0;
+  }
+
+  .compare-heading p{
+    color: var(--ink-dim);
+    font-size: 0.92rem;
+    font-weight: 300;
+    max-width: 50ch;
+    margin: 0 auto;
+  }
+
+  .compare-stage{
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: stretch;
+    gap: clamp(10px, 2vw, 28px);
+    margin-bottom: clamp(20px, 3vw, 32px);
+  }
+
+  .compare-col{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: clamp(16px, 2vw, 26px);
+    transition: border-color 0.5s var(--ease), transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
+    backdrop-filter: blur(6px);
+  }
+
+  .compare-col h3{
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.05rem, 1.6vw, 1.4rem);
+    margin: 0 0 12px 0;
+    letter-spacing: 0.01em;
+  }
+
+  .compare-col.novelty h3{ color: var(--dopamine); }
+  .compare-col.bonding h3{ color: var(--synapse); }
+
+  .compare-col ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .compare-col li{
+    font-size: 0.86rem;
+    font-weight: 300;
+    color: var(--ink-dim);
+    padding-left: 14px;
+    position: relative;
+    line-height: 1.5;
+    transition: color 0.4s var(--ease);
+  }
+
+  .compare-col li::before{
+    content:"";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.5;
+  }
+
+  .compare-path{
+    position: relative;
+    width: clamp(60px, 8vw, 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .compare-path svg{ width: 100%; height: 100%; overflow: visible; }
+
+  .compare-control{
+    max-width: 420px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .compare-control-labels{
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--ink-faint);
+    margin-bottom: 8px;
+  }
+
+  .compare-control-labels .lbl-novelty{ color: var(--dopamine); }
+  .compare-control-labels .lbl-bonding{ color: var(--synapse); }
+
+  input[type="range"].compare-slider{
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--dopamine-dim), var(--synapse-dim));
+    border-radius: 2px;
+    outline-offset: 6px;
+  }
+
+  input[type="range"].compare-slider::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 3px solid var(--deep);
+    box-shadow: 0 0 0 1px var(--line-strong);
+    cursor: pointer;
+  }
+
+  input[type="range"].compare-slider::-moz-range-thumb{
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 3px solid var(--deep);
+    box-shadow: 0 0 0 1px var(--line-strong);
+    cursor: pointer;
+  }
+
+  /* ---------- SLIDE 4 : PERSONAL EXPERIMENT ---------- */
+
+  .slide--experiment .slide-inner{
+    text-align: center;
+  }
+
+  .exp-heading h2{
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 2.8vw, 2.3rem);
+    margin: 0 0 10px 0;
+  }
+
+  .exp-heading p{
+    color: var(--ink-dim);
+    font-size: 0.9rem;
+    font-weight: 300;
+    max-width: 52ch;
+    margin: 0 auto 30px auto;
+  }
+
+  .exp-chain{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(6px, 1.4vw, 14px);
+    margin-bottom: 20px;
+  }
+
+  .exp-chip{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--ink);
+    opacity: 0;
+    transform: translateY(8px);
+    animation: chip-in 0.6s var(--ease) forwards;
+  }
+
+  .exp-plus{
+    color: var(--ink-faint);
+    font-size: 0.9rem;
+    opacity: 0;
+    animation: chip-in 0.6s var(--ease) forwards;
+  }
+
+  @keyframes chip-in{
+    to{ opacity: 1; transform: translateY(0); }
+  }
+
+  .exp-arrow{
+    width: 1px;
+    height: 30px;
+    background: linear-gradient(var(--line-strong), var(--synapse-dim));
+    margin: 6px auto 14px auto;
+  }
+
+  .exp-result{
+    font-family: var(--font-display);
+    font-size: clamp(1.15rem, 2.2vw, 1.7rem);
+    font-weight: 400;
+    color: var(--synapse);
+    margin: 0 0 30px 0;
+    opacity: 0;
+    animation: chip-in 0.7s var(--ease) forwards;
+    animation-delay: 1.5s;
+  }
+
+  .exp-disclaimer{
+    font-size: 0.78rem;
+    font-weight: 300;
+    color: var(--ink-faint);
+    max-width: 54ch;
+    margin: 0 auto 28px auto;
+    line-height: 1.6;
+  }
+
+  .exp-check{
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    max-width: 460px;
+    margin: 0 auto;
+    text-align: left;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: border-color 0.4s var(--ease), background 0.4s var(--ease);
+  }
+
+  .exp-check:hover{ border-color: var(--line-strong); }
+  .exp-check.is-checked{ border-color: var(--synapse-dim); background: rgba(89,214,196,0.06); }
+
+  .exp-checkbox{
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid var(--line-strong);
+    margin-top: 2px;
+    position: relative;
+    transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+  }
+
+  .exp-check.is-checked .exp-checkbox{
+    background: var(--synapse);
+    border-color: var(--synapse);
+  }
+
+  .exp-checkbox svg{
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 12px;
+    height: 12px;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+  }
+
+  .exp-check.is-checked .exp-checkbox svg{ opacity: 1; transform: scale(1); }
+
+  .exp-check-text{
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--ink);
+    font-weight: 300;
+  }
+
+  .exp-check-status{
+    display: block;
+    margin-top: 14px;
+    font-size: 0.78rem;
+    color: var(--synapse);
+    min-height: 1.2em;
+    opacity: 0;
+    transition: opacity 0.3s var(--ease);
+  }
+
+  .exp-check-status.is-visible{ opacity: 1; }
+
+  /* ---------- NAV CHROME ---------- */
+
+  .nav-dots{
+    position: fixed;
+    right: clamp(16px, 3vw, 32px);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .nav-dot{
+    all: unset;
+    cursor: pointer;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ink-faint);
+    opacity: 0.5;
+    transition: opacity 0.3s var(--ease), background 0.3s var(--ease), transform 0.3s var(--ease);
+  }
+
+  .nav-dot.is-active{
+    background: var(--synapse);
+    opacity: 1;
+    transform: scale(1.3);
+  }
+
+  .nav-arrows{
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: clamp(14px, 3vh, 28px);
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    pointer-events: none;
+  }
+
+  .nav-arrow{
+    all: unset;
+    pointer-events: auto;
+    cursor: pointer;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--panel);
+    color: var(--ink-dim);
+    backdrop-filter: blur(6px);
+    transition: border-color 0.3s var(--ease), color 0.3s var(--ease);
+  }
+
+  .nav-arrow:hover{ border-color: var(--synapse-dim); color: var(--synapse); }
+  .nav-arrow:disabled{ opacity: 0.25; cursor: default; }
+  .nav-arrow:disabled:hover{ border-color: var(--line-strong); color: var(--ink-dim); }
+
+  .slide-index{
+    position: fixed;
+    left: clamp(16px, 3vw, 32px);
+    bottom: clamp(14px, 3vh, 28px);
+    z-index: 5;
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sr-only{
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 760px){
+    .slide--loop .slide-inner{ grid-template-columns: 1fr; }
+    .loop-chain{ max-height: 44vh; }
+    .compare-stage{ grid-template-columns: 1fr; }
+    .compare-path{ width: 100%; height: 40px; transform: rotate(90deg); margin: 4px 0; }
+    .nav-dots{ display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+
+<main class="deck" id="deck">
+  <div class="deck-track" id="track">
+
+    <!-- SLIDE 1 — INTRODUCTION -->
+    <section class="slide slide--intro" data-index="0" aria-label="Introducción" role="group" aria-roledescription="diapositiva">
+      <div class="slide-inner">
+        <h1 class="intro-title">EL CAMINO QUÍMICO DEL ENAMORAMIENTO</h1>
+
+        <div id="hero-image" data-asset="hero-image" role="img" aria-label="Ilustración de dos siluetas humanas enfrentadas, conectadas por una red de sinapsis luminosas.">
+          <svg viewBox="0 0 480 330" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="heroGlow" cx="50%" cy="45%" r="65%">
+                <stop offset="0%" stop-color="#1a2b3d"/>
+                <stop offset="100%" stop-color="#0a0e15" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="figA" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#3a4f66"/>
+                <stop offset="100%" stop-color="#161f2c"/>
+              </linearGradient>
+              <linearGradient id="figB" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#4a3a2e"/>
+                <stop offset="100%" stop-color="#1c1712"/>
+              </linearGradient>
+              <filter id="softBlur" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="1.1"/>
+              </filter>
+            </defs>
+
+            <rect x="0" y="0" width="480" height="330" fill="url(#heroGlow)"/>
+
+            <!-- silhouette left -->
+            <path d="M60,300 C55,230 70,190 95,168 C82,150 80,120 100,100 C118,82 150,82 168,102 C186,122 184,152 168,168 C192,190 205,230 200,300 Z"
+                  fill="url(#figA)" opacity="0.92"/>
+
+            <!-- silhouette right -->
+            <path d="M280,300 C276,232 292,192 316,170 C304,152 302,122 322,102 C340,84 372,84 390,104 C408,124 405,153 389,170 C412,192 425,232 420,300 Z"
+                  fill="url(#figB)" opacity="0.92"/>
+
+            <!-- synapse connections -->
+            <g stroke="#59d6c4" stroke-width="0.7" fill="none" opacity="0.55" filter="url(#softBlur)">
+              <path d="M200,150 C225,130 255,130 280,150"/>
+              <path d="M195,180 C230,168 250,168 285,180"/>
+              <path d="M205,120 C230,105 250,105 275,120"/>
+            </g>
+
+            <g fill="#e8a659">
+              <circle cx="240" cy="140" r="3.2"><animate attributeName="opacity" values="0.2;1;0.2" dur="3.4s" repeatCount="indefinite"/></circle>
+              <circle cx="225" cy="170" r="2.2"><animate attributeName="opacity" values="1;0.2;1" dur="2.7s" repeatCount="indefinite"/></circle>
+              <circle cx="258" cy="115" r="2.4"><animate attributeName="opacity" values="0.3;1;0.3" dur="4.1s" repeatCount="indefinite"/></circle>
+            </g>
+
+            <g fill="#59d6c4">
+              <circle cx="270" cy="155" r="2.6"><animate attributeName="opacity" values="1;0.25;1" dur="3.1s" repeatCount="indefinite"/></circle>
+              <circle cx="210" cy="128" r="2"><animate attributeName="opacity" values="0.25;1;0.25" dur="3.8s" repeatCount="indefinite"/></circle>
+            </g>
+          </svg>
+        </div>
+
+        <p class="intro-subtitle">Cómo una persona puede pasar de ser un estímulo atractivo a convertirse en una señal de recompensa y conexión.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 2 — THE REWARD LOOP -->
+    <section class="slide slide--loop" data-index="1" aria-label="El ciclo de recompensa" role="group" aria-roledescription="diapositiva">
+      <div class="slide-inner">
+        <div class="loop-heading">
+          <h2>El ciclo de recompensa</h2>
+          <p>Un mismo circuito cerebral se activa, paso a paso, entre notar a alguien y aprender a desearlo de nuevo. Toca cada etapa para ver qué ocurre.</p>
+          <div class="loop-note">La <strong>dopamina</strong> no es la molécula del placer: impulsa la motivación, marca lo relevante, guía el aprendizaje y anticipa la recompensa antes de que esta llegue.</div>
+        </div>
+
+        <div class="loop-chain" id="loopChain" role="list"></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3 — FROM REWARD TO CONNECTION -->
+    <section class="slide slide--compare" data-index="2" aria-label="Del deseo al vínculo" role="group" aria-roledescription="diapositiva">
+      <div class="slide-inner">
+        <div class="compare-heading">
+          <h2>Del deseo al vínculo</h2>
+          <p>El mismo cerebro sostiene dos estados distintos: la chispa inicial y el lazo que se construye después. Ninguno reemplaza al otro.</p>
+        </div>
+
+        <div class="compare-stage">
+          <div class="compare-col novelty" id="colNovelty">
+            <h3>Enamoramiento inicial</h3>
+            <ul>
+              <li>Novedad</li>
+              <li>Anticipación</li>
+              <li>Motivación</li>
+              <li>Atención intensa</li>
+              <li>Búsqueda activa</li>
+              <li>Predicción de recompensa</li>
+            </ul>
+          </div>
+
+          <div class="compare-path" aria-hidden="true">
+            <svg viewBox="0 0 120 200" preserveAspectRatio="none">
+              <path id="pathBase" d="M4,20 C60,20 60,180 116,180" stroke="var(--line-strong)" stroke-width="1.5" fill="none"/>
+              <path id="pathActive" d="M4,20 C60,20 60,180 116,180" stroke="url(#pathGrad)" stroke-width="2" fill="none" stroke-dasharray="260" stroke-dashoffset="260"/>
+              <defs>
+                <linearGradient id="pathGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#e8a659"/>
+                  <stop offset="100%" stop-color="#59d6c4"/>
+                </linearGradient>
+              </defs>
+              <circle id="pathDot" cx="4" cy="20" r="4" fill="#e8a659"/>
+            </svg>
+          </div>
+
+          <div class="compare-col bonding" id="colBonding">
+            <h3>Vínculo</h3>
+            <ul>
+              <li>Familiaridad</li>
+              <li>Confianza</li>
+              <li>Seguridad emocional</li>
+              <li>Experiencias positivas repetidas</li>
+              <li>Apego</li>
+              <li>Conexión social sostenida</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="compare-control">
+          <div class="compare-control-labels">
+            <span class="lbl-novelty">NOVEDAD</span>
+            <span class="lbl-bonding">VÍNCULO</span>
+          </div>
+          <input type="range" min="0" max="100" value="50" class="compare-slider" id="compareSlider" aria-label="Deslizar entre novedad y vínculo">
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4 — PERSONAL EXPERIMENT -->
+    <section class="slide slide--experiment" data-index="3" aria-label="Experimento personal" role="group" aria-roledescription="diapositiva">
+      <div class="slide-inner">
+        <div class="exp-heading">
+          <h2>Un experimento personal</h2>
+          <p>Estos hábitos no producen enamoramiento por sí solos: sostienen un cerebro más disponible para vivir la conexión cuando esta aparece.</p>
+        </div>
+
+        <div class="exp-chain" id="expChain"></div>
+        <div class="exp-arrow" aria-hidden="true"></div>
+        <p class="exp-result">Mayor oportunidad de conexión</p>
+
+        <p class="exp-disclaimer">Esto no es una fórmula científicamente probada para hacer que alguien se enamore. Dormir bien, comer con cuidado, moverte, meditar, buscar novedad y sostener interacción humana favorecen la salud cerebral y la regulación emocional — y con ello, las oportunidades de conexión. No pueden forzar la atracción de otra persona.</p>
+
+        <div class="exp-check" id="expCheck" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="exp-checkbox" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="#0a0e15" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="exp-check-text">Quiero observar cómo respondo a experiencias reales de conexión durante los próximos 30 días.</span>
+        </div>
+        <span class="exp-check-status" id="expStatus" aria-live="polite">Registrado — buena forma de empezar.</span>
+      </div>
+    </section>
+
+  </div>
+
+  <nav class="nav-dots" aria-label="Ir a diapositiva">
+    <button class="nav-dot" data-goto="0" aria-label="Ir a diapositiva 1"></button>
+    <button class="nav-dot" data-goto="1" aria-label="Ir a diapositiva 2"></button>
+    <button class="nav-dot" data-goto="2" aria-label="Ir a diapositiva 3"></button>
+    <button class="nav-dot" data-goto="3" aria-label="Ir a diapositiva 4"></button>
+  </nav>
+
+  <div class="nav-arrows">
+    <button class="nav-arrow" id="prevBtn" aria-label="Diapositiva anterior">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="nav-arrow" id="nextBtn" aria-label="Siguiente diapositiva">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <div class="slide-index" id="slideIndex" aria-hidden="true">01 / 04</div>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- ambient neural background ---------------- */
+  var canvas = document.getElementById('bg-canvas');
+  var ctx = canvas.getContext('2d');
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var nodes = [];
+  var W, H;
+
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  var nodeCount = Math.max(28, Math.min(60, Math.round((W*H)/38000)));
+  for(var i=0;i<nodeCount;i++){
+    nodes.push({
+      x: Math.random()*W,
+      y: Math.random()*H,
+      vx: (Math.random()-0.5)*0.12,
+      vy: (Math.random()-0.5)*0.12,
+      r: Math.random()*1.4+0.6
+    });
+  }
+
+  function drawFrame(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = 'rgba(89,214,196,0.55)';
+    for(var i=0;i<nodes.length;i++){
+      var n = nodes[i];
+      if(!reduceMotion){
+        n.x += n.vx; n.y += n.vy;
+        if(n.x < 0 || n.x > W) n.vx *= -1;
+        if(n.y < 0 || n.y > H) n.vy *= -1;
+      }
+      for(var j=i+1;j<nodes.length;j++){
+        var m = nodes[j];
+        var dx = n.x-m.x, dy = n.y-m.y;
+        var dist = Math.sqrt(dx*dx+dy*dy);
+        if(dist < 140){
+          ctx.strokeStyle = 'rgba(140,160,180,' + (0.10*(1-dist/140)) + ')';
+          ctx.lineWidth = 0.6;
+          ctx.beginPath();
+          ctx.moveTo(n.x,n.y);
+          ctx.lineTo(m.x,m.y);
+          ctx.stroke();
+        }
+      }
+    }
+    for(var k=0;k<nodes.length;k++){
+      ctx.beginPath();
+      ctx.arc(nodes[k].x, nodes[k].y, nodes[k].r, 0, Math.PI*2);
+      ctx.fill();
+    }
+    if(!reduceMotion) requestAnimationFrame(drawFrame);
+  }
+  drawFrame();
+
+  /* ---------------- slide navigation ---------------- */
+  var track = document.getElementById('track');
+  var slides = document.querySelectorAll('.slide');
+  var dots = document.querySelectorAll('.nav-dot');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var slideIndexEl = document.getElementById('slideIndex');
+  var total = slides.length;
+  var current = 0;
+
+  function render(){
+    track.style.transform = 'translateX(-' + (current * (100/total)) + '%)';
+    dots.forEach(function(d, idx){ d.classList.toggle('is-active', idx === current); });
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+    slideIndexEl.textContent = String(current+1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+    slides.forEach(function(s, idx){
+      s.setAttribute('aria-hidden', idx === current ? 'false' : 'true');
+    });
+  }
+
+  function goTo(idx){
+    current = Math.max(0, Math.min(total-1, idx));
+    render();
+  }
+
+  prevBtn.addEventListener('click', function(){ goTo(current-1); });
+  nextBtn.addEventListener('click', function(){ goTo(current+1); });
+  dots.forEach(function(d){
+    d.addEventListener('click', function(){ goTo(parseInt(d.dataset.goto,10)); });
+  });
+
+  window.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === 'PageDown'){ goTo(current+1); }
+    else if(e.key === 'ArrowLeft' || e.key === 'PageUp'){ goTo(current-1); }
+    else if(e.key === 'Home'){ goTo(0); }
+    else if(e.key === 'End'){ goTo(total-1); }
+  });
+
+  var touchStartX = null;
+  var deckEl = document.getElementById('deck');
+  deckEl.addEventListener('touchstart', function(e){ touchStartX = e.changedTouches[0].clientX; }, {passive:true});
+  deckEl.addEventListener('touchend', function(e){
+    if(touchStartX === null) return;
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    if(Math.abs(dx) > 50){
+      if(dx < 0) goTo(current+1); else goTo(current-1);
+    }
+    touchStartX = null;
+  }, {passive:true});
+
+  render();
+
+  /* ---------------- slide 2: reward loop stages ---------------- */
+  var stages = [
+    { name: 'PERSONA', text: 'Un rostro, una voz o un gesto capta la atención del cerebro como un estímulo relevante entre miles de estímulos posibles.' },
+    { name: 'SALIENCIA', text: 'El sistema atencional marca a esa persona como algo importante, destacándola del resto del entorno sensorial.' },
+    { name: 'ANTICIPACIÓN', text: 'El cerebro empieza a predecir un posible encuentro o recompensa futura, generando expectativa.' },
+    { name: 'DOPAMINA', text: 'Se libera dopamina: motivación, aprendizaje y predicción de recompensa, no únicamente placer.' },
+    { name: 'BÚSQUEDA / ACERCAMIENTO', text: 'La motivación se traduce en conducta: coincidir, escribir un mensaje, acercarse físicamente.' },
+    { name: 'INTERACCIÓN', text: 'El encuentro real ocurre: miradas, palabras, contacto. El cerebro compara la experiencia con lo anticipado.' },
+    { name: 'RECOMPENSA', text: 'Si la interacción resulta positiva, se refuerza el circuito, aumentando el deseo de repetirla.' },
+    { name: 'APRENDIZAJE', text: 'El cerebro actualiza sus predicciones y asocia a esa persona con bienestar; el ciclo puede reiniciarse con más intensidad.' }
+  ];
+
+  var loopChain = document.getElementById('loopChain');
+  stages.forEach(function(stage, idx){
+    var el = document.createElement('div');
+    el.className = 'loop-stage';
+    el.setAttribute('role','listitem');
+    el.innerHTML =
+      '<span class="loop-dot" aria-hidden="true"><span></span></span>' +
+      '<button class="loop-stage-btn" aria-expanded="false">' +
+        '<span class="loop-stage-head">' +
+          '<span class="loop-stage-name">' + stage.name + '</span>' +
+          '<span class="loop-stage-toggle" aria-hidden="true">+</span>' +
+        '</span>' +
+        '<span class="loop-stage-panel"><p>' + stage.text + '</p></span>' +
+      '</button>';
+    loopChain.appendChild(el);
+
+    var btn = el.querySelector('.loop-stage-btn');
+    btn.addEventListener('click', function(){
+      var wasActive = el.classList.contains('is-active');
+      loopChain.querySelectorAll('.loop-stage').forEach(function(s){
+        s.classList.remove('is-active');
+        s.querySelector('.loop-stage-btn').setAttribute('aria-expanded','false');
+      });
+      if(!wasActive){
+        el.classList.add('is-active');
+        btn.setAttribute('aria-expanded','true');
+      }
+    });
+  });
+  // open first stage by default
+  if(loopChain.children.length){
+    loopChain.children[0].classList.add('is-active');
+    loopChain.children[0].querySelector('.loop-stage-btn').setAttribute('aria-expanded','true');
+  }
+
+  /* ---------------- slide 3: novelty / bonding slider ---------------- */
+  var slider = document.getElementById('compareSlider');
+  var colNovelty = document.getElementById('colNovelty');
+  var colBonding = document.getElementById('colBonding');
+  var pathActive = document.getElementById('pathActive');
+  var pathDot = document.getElementById('pathDot');
+  var pathLength = 260;
+
+  function updateCompare(){
+    var v = parseInt(slider.value, 10); // 0 = novelty, 100 = bonding
+    var noveltyEmphasis = 1 - (v/100);
+    var bondingEmphasis = v/100;
+
+    colNovelty.style.opacity = (0.55 + 0.45*noveltyEmphasis).toFixed(2);
+    colNovelty.style.transform = 'scale(' + (0.97 + 0.03*noveltyEmphasis).toFixed(3) + ')';
+    colNovelty.style.borderColor = noveltyEmphasis > 0.5 ? 'rgba(232,166,89,0.45)' : 'var(--line)';
+
+    colBonding.style.opacity = (0.55 + 0.45*bondingEmphasis).toFixed(2);
+    colBonding.style.transform = 'scale(' + (0.97 + 0.03*bondingEmphasis).toFixed(3) + ')';
+    colBonding.style.borderColor = bondingEmphasis > 0.5 ? 'rgba(89,214,196,0.45)' : 'var(--line)';
+
+    var offset = pathLength - (pathLength * (v/100));
+    pathActive.style.strokeDashoffset = offset;
+
+    // move dot along the path approx (cubic bezier endpoints match path)
+    var t = v/100;
+    var x = bezierPoint(4,60,60,116,t);
+    var y = bezierPoint(20,20,180,180,t);
+    pathDot.setAttribute('cx', x);
+    pathDot.setAttribute('cy', y);
+    pathDot.setAttribute('fill', t < 0.5 ? '#e8a659' : '#59d6c4');
+  }
+
+  function bezierPoint(p0,p1,p2,p3,t){
+    var u = 1-t;
+    return u*u*u*p0 + 3*u*u*t*p1 + 3*u*t*t*p2 + t*t*t*p3;
+  }
+
+  slider.addEventListener('input', updateCompare);
+  updateCompare();
+
+  /* ---------------- slide 4: chips + checkbox ---------------- */
+  var habits = ['SUEÑO','ALIMENTACIÓN','EJERCICIO','MEDITACIÓN','NOVEDAD','INTERACCIÓN HUMANA'];
+  var expChain = document.getElementById('expChain');
+  habits.forEach(function(h, idx){
+    if(idx > 0){
+      var plus = document.createElement('span');
+      plus.className = 'exp-plus';
+      plus.textContent = '+';
+      plus.style.animationDelay = (idx*0.14) + 's';
+      expChain.appendChild(plus);
+    }
+    var chip = document.createElement('span');
+    chip.className = 'exp-chip';
+    chip.textContent = h;
+    chip.style.animationDelay = (idx*0.14 + 0.07) + 's';
+    expChain.appendChild(chip);
+  });
+
+  var expCheck = document.getElementById('expCheck');
+  var expStatus = document.getElementById('expStatus');
+
+  function toggleCheck(){
+    var checked = expCheck.classList.toggle('is-checked');
+    expCheck.setAttribute('aria-checked', checked ? 'true' : 'false');
+    expStatus.classList.toggle('is-visible', checked);
+  }
+
+  expCheck.addEventListener('click', toggleCheck);
+  expCheck.addEventListener('keydown', function(e){
+    if(e.key === ' ' || e.key === 'Enter'){
+      e.preventDefault();
+      toggleCheck();
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
