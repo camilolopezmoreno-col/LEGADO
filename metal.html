@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>metal gear — Checklist</title>
+
+<style>
+  body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#f5ecdd;
+    color:#2c1a10;
+    font-family:Arial,sans-serif;
+  }
+
+  .checklist{
+    width:min(90%,420px);
+  }
+
+  h1{
+    margin-bottom:24px;
+  }
+
+  .check-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px;
+    margin-bottom:10px;
+    background:rgba(255,250,240,.6);
+    border:1px solid rgba(44,26,16,.15);
+    border-radius:10px;
+  }
+
+  input[type="checkbox"]{
+    width:20px;
+    height:20px;
+    cursor:pointer;
+  }
+
+  label{
+    cursor:pointer;
+  }
+
+  #counter{
+    margin-top:20px;
+    font-size:.9rem;
+  }
+</style>
+</head>
+
+<body>
+
+<main class="checklist">
+
+  <h1>metal gear</h1>
+
+  <div class="check-item">
+    <input type="checkbox" id="pineapple-0">
+    <label for="pineapple-0">Te gusta Metal gwr?</label>
+  </div>
+
+
+  <div id="counter">0 de 1 completados</div>
+
+</main>
+
+<script>
+(function(){
+
+  "use strict";
+
+  /* ==========================================
+     SINCRONIZACIÓN COMPARTIDA
+     ========================================== */
+
+  var KEY = "metal.v1";
+
+  var DEFAULTS = {
+    "love.experiment": false,
+
+    "pineapple.0": false,
+
+  };
+
+  function get(){
+
+    try{
+
+      return Object.assign(
+        {},
+        DEFAULTS,
+        JSON.parse(localStorage.getItem(KEY) || "{}")
+      );
+
+    }catch(e){
+
+      return Object.assign({}, DEFAULTS);
+
+    }
+
+  }
+
+  function set(id,value){
+
+    var state = get();
+
+    state[id] = !!value;
+
+    try{
+      localStorage.setItem(
+        KEY,
+        JSON.stringify(state)
+      );
+    }catch(e){}
+
+    window.dispatchEvent(
+      new Event("metal-sync")
+    );
+
+  }
+
+  /*
+    API compartida con los otros HTML
+  */
+
+  window.ExperienceChecklist = {
+    key: KEY,
+    get: get,
+    set: set
+  };
+
+
+  /* ==========================================
+     CHECKBOXES DE PIÑA
+     ========================================== */
+
+  var checkboxes = [];
+
+  for(var i = 0; i < 1; i++){
+
+    var checkbox =
+      document.getElementById("pineapple-" + i);
+
+    checkboxes.push(checkbox);
+
+    checkbox.addEventListener("change",function(){
+
+      var index =
+        checkboxes.indexOf(this);
+
+      ExperienceChecklist.set(
+        "pineapple." + index,
+        this.checked
+      );
+
+      update();
+
+    });
+
+  }
+
+
+  /* ==========================================
+     ACTUALIZAR INTERFAZ
+     ========================================== */
+
+  function update(){
+
+    var state =
+      ExperienceChecklist.get();
+
+    var count = 0;
+
+    checkboxes.forEach(function(checkbox,index){
+
+      var checked =
+        !!state["pineapple." + index];
+
+      checkbox.checked = checked;
+
+      if(checked){
+        count++;
+      }
+
+    });
+
+    document.getElementById("counter").textContent =
+      count + " de 1 completados";
+
+  }
+
+
+  /* ==========================================
+     ESCUCHAR CAMBIOS DE LOS OTROS HTML
+     ========================================== */
+
+  window.addEventListener(
+    "metal-sync",
+    update
+  );
+
+
+  /* Cambios realizados desde otra pestaña */
+  window.addEventListener(
+    "storage",
+    function(e){
+
+      if(e.key === KEY){
+
+        window.dispatchEvent(
+          new Event("metal-sync")
+        );
+
+      }
+
+    }
+  );
+
+
+  /* Estado inicial */
+  update();
+
+})();
+</script>
+
+</body>
+</html>
