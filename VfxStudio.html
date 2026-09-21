@@ -1,0 +1,619 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>VFX SET REPORT</title>
+  <style>
+    :root {
+      --bg-dark: #0a0d12;
+      --bg-card: #121720;
+      --text-main: #e2e8f0;
+      --text-muted: #8a99ad;
+      --accent-blue: #38bdf8;
+      --accent-orange: #f97316;
+      --accent-green: #22c55e;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #040608;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Vertical Scroll Snap Container — Height set to 80vh */
+    .app-container {
+      width: 100vw;
+      height: 80vh; /* Controlled 80vh container */
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      background-color: var(--bg-dark);
+    }
+
+    /* Each slide set to 80vh height */
+    .slide {
+      width: 100vw;
+      height: 80vh; /* Adjusted slide length */
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px 24px;
+      overflow: hidden;
+      background-color: var(--bg-dark);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    /* Desktop Responsive Adapter maintaining 80vh slide constraint */
+    @media (min-width: 768px) {
+      .app-container {
+        width: auto;
+        border-radius: 8px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+      }
+      .slide {
+        width: 450px;
+        height: 80vh; /* Desktop 80vh adaptation */
+        border-left: 1px solid var(--border-color);
+        border-right: 1px solid var(--border-color);
+      }
+    }
+
+    /* Slide Header Technical Overlay */
+    .slide-tech-header {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+    }
+
+    /* SLIDE 1 LAYOUT */
+    .slide-1-content {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: space-between;
+    }
+
+    .slide-1-content h1.title {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #ffffff;
+      text-transform: uppercase;
+      margin-top: 4px;
+      font-family: var(--font-sans);
+    }
+
+    .hero-image {
+      width: 100%;
+      max-height: 170px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      margin: 10px 0;
+      filter: contrast(1.05) brightness(0.9);
+    }
+
+    .slide-1-content h2.hero-text {
+      font-size: 19px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: #f1f5f9;
+      margin-bottom: 8px;
+    }
+
+    .slide-1-content p.subtitle {
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    /* SLIDE 2 - DIGITAL SET INTERACTIVE */
+    .viewer-container {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      background-color: #000;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+
+    .view-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .view-layer.active {
+      opacity: 1;
+    }
+
+    .view-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .controls-bar {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-card);
+      padding: 4px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      margin-top: 8px;
+    }
+
+    .btn-toggle {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 6px 0;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.2s;
+    }
+
+    .btn-toggle.active {
+      background: #242e3d;
+      color: var(--accent-blue);
+      font-weight: bold;
+    }
+
+    .metadata-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-top: 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+    }
+
+    .meta-item {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 6px 8px;
+      border-radius: 3px;
+      border-left: 2px solid var(--accent-blue);
+    }
+
+    .meta-label {
+      color: var(--text-muted);
+      display: block;
+      font-size: 8px;
+      text-transform: uppercase;
+    }
+
+    .meta-val {
+      color: #ffffff;
+      margin-top: 2px;
+    }
+
+    .data-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      padding: 2px 6px;
+      border-radius: 2px;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+    .badge-captured { background: rgba(34, 197, 94, 0.15); color: var(--accent-green); border: 1px solid rgba(34, 197, 94, 0.3); }
+    .badge-viz { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); border: 1px solid rgba(56, 189, 248, 0.3); }
+
+    /* SLIDE 3 - PREVIS / COMFYUI */
+    .interactive-split {
+      position: relative;
+      width: 100%;
+      height: 190px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .split-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .slider-control {
+      width: 100%;
+      margin-top: 8px;
+      accent-color: var(--accent-orange);
+    }
+
+    .node-status-bar {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      background: var(--bg-card);
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      margin-top: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* SLIDE 4 - HANDOFF */
+    .workflow-chain {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--accent-blue);
+      letter-spacing: 0.5px;
+      word-break: break-all;
+      background: rgba(56, 189, 248, 0.05);
+      padding: 6px;
+      border: 1px dashed rgba(56, 189, 248, 0.2);
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    .checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      padding: 8px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .check-item input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--accent-green);
+    }
+
+    .notes-box {
+      width: 100%;
+      height: 60px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 6px;
+      resize: none;
+    }
+
+    .notes-box:focus {
+      outline: 1px solid var(--accent-blue);
+    }
+
+    /* Slide Scroll Indicator */
+    .indicator {
+      position: absolute;
+      bottom: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+
+  <!-- SLIDE 1 — THE SET -->
+  <section class="slide">
+    <div class="slide-1-content">
+      <div>
+        <div class="slide-tech-header">
+          <span>SYS.REF // 01</span>
+          <span>FIELD CAPTURE</span>
+        </div>
+
+        <h1 class="title">VFX SET REPORT</h1>
+
+        <!-- Base64 Dark Cinematic Set Minimal Graphic -->
+        <img class="hero-image" alt="Film Set" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMjIwIiB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIyMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyMjAiIGZpbGw9IiMwODEwMTUiLz48cGF0aCBkPSJNMCAyMDBMNDAwIDIwME01MCAyMDBMMTU0IDYwTTM1MCAyMDBMMTI0IDYwTTE1NCA2MEwyNDYgNjAiIHN0cm9rZT0iIzI0MmUzZCIgc3Ryb2tlLXdpZHRoPSIxLjUiIGZpbGw9Im5vbmUiLz48Y2lyY2xlIGN4PSIyMDAiIGN5PSI5MCIgcj0iNDAiIHN0cm9rZT0iIzM4YmRmOCIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBzdHJva2UtZGFzaGFycmF5PSI0LDIiLz48cGF0aCBkPSJNODAgMThMMTgwIDE4TDE1MCA5MEg1MFoiIGZpbGw9InJnYmEoNTYsIDE4OSwgMjQ4LCAwLjA1KSIgc3Ryb2tlPSIjMzhiZGY4IiBzdHJva2Utd2lkdGg9IjAuNSIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjkwIiByPSI0IiBmaWxsPSIjZjA1MTM4Ii8+PHRleHQgeD0iMTAiIHk9IjI1IiBmaWxsPSIjOGE5OWFkIiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjgiPlNFVCBQT1M6IDM0LjA1MiwtMTE4LjI0MzwvdGV4dD48dGV4dCB4PSIzMDAiIHk9IjI1IiBmaWxsPSIjMzhiZGY4IiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjgiPkxJREFSIEFDVElWRTwvdGV4dD48L3N2Zz4=" />
+
+        <h2 class="hero-text">Capture the space before you need it.</h2>
+        <p class="subtitle">LiDAR documentation becomes the spatial foundation for previs, VFX supervision and postproduction.</p>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <div class="metadata-grid">
+          <div class="meta-item">
+            <span class="meta-label">SCAN DENSITY</span>
+            <span class="meta-val">12.4M Pts</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">ACCURACY</span>
+            <span class="meta-val">± 2.0mm</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="indicator">SCROLL DOWN ▼</div>
+  </section>
+
+  <!-- SLIDE 2 — THE DIGITAL SET -->
+  <section class="slide">
+    <div>
+      <div class="slide-tech-header">
+        <span>SYS.REF // 02</span>
+        <span>SPATIAL RECONSTRUCTION</span>
+      </div>
+
+      <div class="viewer-container">
+        <!-- Real Set -->
+        <div class="view-layer active" id="layer-real">
+          <svg class="view-svg" viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="240" fill="#0d1117"/>
+            <path d="M50 200 L120 100 L280 100 L350 200 Z" fill="#161b22" stroke="#30363d"/>
+            <rect x="160" y="110" width="80" height="70" fill="#21262d" stroke="#484f58"/>
+            <circle cx="80" cy="80" r="15" fill="#e3b341" opacity="0.8"/>
+            <text x="20" y="30" fill="#8b949e" font-family="monospace" font-size="10">RAW FILM SET (PLATE)</text>
+          </svg>
+        </div>
+        <!-- LiDAR -->
+        <div class="view-layer" id="layer-lidar">
+          <svg class="view-svg" viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="240" fill="#05080c"/>
+            <g fill="#38bdf8" opacity="0.6">
+              <circle cx="50" cy="200" r="1.5"/><circle cx="80" cy="150" r="1.5"/><circle cx="120" cy="100" r="1.5"/>
+              <circle cx="280" cy="100" r="1.5"/><circle cx="310" cy="150" r="1.5"/><circle cx="350" cy="200" r="1.5"/>
+              <circle cx="160" cy="110" r="1.5"/><circle cx="240" cy="110" r="1.5"/><circle cx="160" cy="180" r="1.5"/>
+              <circle cx="240" cy="180" r="1.5"/><circle cx="200" cy="145" r="2" fill="#f97316"/>
+            </g>
+            <path d="M50 200 L120 100 L280 100 L350 200 Z" stroke="#38bdf8" stroke-width="0.5" stroke-dasharray="2,4" fill="none"/>
+            <text x="20" y="30" fill="#38bdf8" font-family="monospace" font-size="10">LiDAR POINT CLOUD</text>
+          </svg>
+        </div>
+        <!-- Blender -->
+        <div class="view-layer" id="layer-blender">
+          <svg class="view-svg" viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="240" fill="#1e1e1e"/>
+            <path d="M50 200 L120 100 L280 100 L350 200 Z" fill="#2d2d2d" stroke="#f97316" stroke-width="1"/>
+            <rect x="160" y="110" width="80" height="70" fill="#3c3c3c" stroke="#ffffff" stroke-width="0.5"/>
+            <path d="M350 40 L350 10 M350 40 L370 40 M350 40 L335 50" stroke="#f97316" stroke-width="1.5"/>
+            <text x="20" y="30" fill="#f97316" font-family="monospace" font-size="10">BLENDER MESH RECONSTRUCTION</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="controls-bar">
+        <button class="btn-toggle active" onclick="setSlide2State('real', this)">REAL SET</button>
+        <button class="btn-toggle" onclick="setSlide2State('lidar', this)">LiDAR</button>
+        <button class="btn-toggle" onclick="setSlide2State('blender', this)">BLENDER</button>
+      </div>
+
+      <div id="badge-container">
+        <span class="data-badge badge-captured">● Captured / Measured Data</span>
+      </div>
+
+      <div class="metadata-grid">
+        <div class="meta-item">
+          <span class="meta-label">SCALE</span>
+          <span class="meta-val">1:1 Metric</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">GEOMETRY</span>
+          <span class="meta-val">142k Polys</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">CAMERA POS</span>
+          <span class="meta-val">X:2.4 Y:1.1 Z:0.8</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">LENS REF</span>
+          <span class="meta-val">35mm T2.0</span>
+        </div>
+      </div>
+    </div>
+    <div class="indicator">SCROLL DOWN ▼</div>
+  </section>
+
+  <!-- SLIDE 3 — PREVIS / COMFYUI -->
+  <section class="slide">
+    <div>
+      <div class="slide-tech-header">
+        <span>SYS.REF // 03</span>
+        <span>VISUAL EXPLORATION</span>
+      </div>
+
+      <div class="interactive-split">
+        <div class="split-image" style="background: #0f172a;">
+          <svg class="view-svg" viewBox="0 0 400 250" fill="none">
+            <defs>
+              <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#0284c7"/>
+                <stop offset="100%" stop-color="#0f172a"/>
+              </linearGradient>
+            </defs>
+            <rect width="400" height="250" fill="url(#sky)"/>
+            <circle cx="300" cy="60" r="40" fill="#fef08a" opacity="0.3"/>
+            <path d="M0 250 L120 120 L280 120 L400 250 Z" fill="#1e293b"/>
+            <path d="M120 120 L200 40 L280 120 Z" fill="#334155" opacity="0.8"/>
+            <text x="15" y="230" fill="#38bdf8" font-family="monospace" font-size="10">COMFYUI: ATMOSPHERE &amp; EXTENSION</text>
+          </svg>
+        </div>
+
+        <div class="split-image" id="blender-overlay" style="width: 50%; overflow: hidden; border-right: 2px solid var(--accent-orange); background: #121212;">
+          <svg class="view-svg" viewBox="0 0 400 250" fill="none" style="width: 400px;">
+            <rect width="400" height="250" fill="#121212"/>
+            <path d="M0 250 L120 120 L280 120 L400 250 Z" fill="none" stroke="#f97316" stroke-width="1.5"/>
+            <path d="M120 120 L200 40 L280 120 Z" fill="none" stroke="#f97316" stroke-width="1" stroke-dasharray="4,4"/>
+            <text x="15" y="230" fill="#f97316" font-family="monospace" font-size="10">BLENDER: PREVIS MESH</text>
+          </svg>
+        </div>
+      </div>
+
+      <input type="range" min="0" max="100" value="50" class="slider-control" id="splitSlider" oninput="updateSplit(this.value)">
+
+      <div class="node-status-bar">
+        <span>STRUCTURAL: <strong style="color:var(--accent-orange)">PRESERVED</strong></span>
+        <span>AI EXPLORATION: <strong style="color:var(--accent-blue)">ACTIVE</strong></span>
+      </div>
+
+      <div class="metadata-grid" style="margin-top:8px;">
+        <div class="meta-item" style="border-color: var(--accent-orange);">
+          <span class="meta-label">BLENDER PREVIS</span>
+          <span class="meta-val">Spatial Structure</span>
+        </div>
+        <div class="meta-item" style="border-color: var(--accent-blue);">
+          <span class="meta-label">COMFYUI DEV</span>
+          <span class="meta-val">Visual Exploration</span>
+        </div>
+      </div>
+    </div>
+    <div class="indicator">SCROLL DOWN ▼</div>
+  </section>
+
+  <!-- SLIDE 4 — CONCLUSION / VFX HANDOFF -->
+  <section class="slide">
+    <div>
+      <div class="slide-tech-header">
+        <span>SYS.REF // 04</span>
+        <span>HANDOFF &amp; CHECK-OUT</span>
+      </div>
+
+      <div class="workflow-chain">
+        CAPTURE → RECONSTRUCT → PREVIS → EXPLORE → DECIDE → SHOOT → DELIVER TO POST
+      </div>
+
+      <div class="checklist">
+        <label class="check-item">
+          <input type="checkbox" id="chk1" onchange="syncData()">
+          <span>LiDAR / spatial data captured</span>
+        </label>
+        <label class="check-item">
+          <input type="checkbox" id="chk2" onchange="syncData()">
+          <span>Camera / lens information documented</span>
+        </label>
+        <label class="check-item">
+          <input type="checkbox" id="chk3" onchange="syncData()">
+          <span>Previs / VFX requirements reviewed</span>
+        </label>
+        <label class="check-item">
+          <input type="checkbox" id="chk4" onchange="syncData()">
+          <span>Postproduction data organized</span>
+        </label>
+      </div>
+
+      <div style="margin-top: 6px;">
+        <span class="meta-label" style="margin-bottom: 4px;">SUPERVISOR FINAL NOTES</span>
+        <textarea class="notes-box" id="vfxNotes" placeholder="Enter session notes or handoff instructions..." oninput="syncData()"></textarea>
+      </div>
+    </div>
+
+    <div style="font-family: var(--font-mono); font-size: 8px; color: var(--text-muted); text-align: center;">
+      SYNC KEY: <span style="color:var(--accent-blue)">"sync".v1</span> | END OF REPORT
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const SYNC_KEY = '"sync".v1';
+
+  function setSlide2State(state, btn) {
+    document.querySelectorAll('.view-layer').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.btn-toggle').forEach(el => el.classList.remove('active'));
+    
+    document.getElementById('layer-' + state).classList.add('active');
+    btn.classList.add('active');
+
+    const badgeContainer = document.getElementById('badge-container');
+    if(state === 'real' || state === 'lidar') {
+      badgeContainer.innerHTML = '<span class="data-badge badge-captured">● Captured / Measured Data</span>';
+    } else {
+      badgeContainer.innerHTML = '<span class="data-badge badge-viz">○ Visualization / Reconstruction</span>';
+    }
+  }
+
+  function updateSplit(val) {
+    document.getElementById('blender-overlay').style.width = val + '%';
+  }
+
+  function syncData() {
+    const payload = {
+      chk1: document.getElementById('chk1').checked,
+      chk2: document.getElementById('chk2').checked,
+      chk3: document.getElementById('chk3').checked,
+      chk4: document.getElementById('chk4').checked,
+      notes: document.getElementById('vfxNotes').value
+    };
+    try {
+      localStorage.setItem(SYNC_KEY, JSON.stringify(payload));
+    } catch(e) {}
+  }
+
+  function loadSyncedData() {
+    try {
+      const raw = localStorage.getItem(SYNC_KEY);
+      if (raw) {
+        const data = JSON.parse(raw);
+        if(data.chk1 !== undefined) document.getElementById('chk1').checked = data.chk1;
+        if(data.chk2 !== undefined) document.getElementById('chk2').checked = data.chk2;
+        if(data.chk3 !== undefined) document.getElementById('chk3').checked = data.chk3;
+        if(data.chk4 !== undefined) document.getElementById('chk4').checked = data.chk4;
+        if(data.notes !== undefined) document.getElementById('vfxNotes').value = data.notes;
+      }
+    } catch(e) {}
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    loadSyncedData();
+  });
+</script>
+</body>
+</html>
+
