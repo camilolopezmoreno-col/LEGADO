@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>30 DAY REWARD SYSTEM</title>
+<style>
+  :root {
+    --bg-base: #111622;
+    --text-main: #E2E8F0;
+    --text-muted: #94A3B8;
+    --accent: #38BDF8;
+    --accent-glow: rgba(56, 189, 248, 0.25);
+    --surface: rgba(23, 32, 51, 0.65);
+    --surface-border: rgba(255, 255, 255, 0.08);
+    --font-heading: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-main);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    line-height: 1.4;
+  }
+
+  /* Vertical Scroll Snap Container */
+  .snap-container {
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    padding: 7.5vh 0; /* Align 85vh slides in center */
+  }
+
+  .slide {
+    height: 85vh;
+    max-height: 85vh;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    border: 1px solid var(--surface-border);
+    /* Atmospheric photographic textured background */
+    background: 
+      linear-gradient(180deg, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%),
+      radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.08), transparent 70%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: cover, cover, auto;
+  }
+
+  /* Slide 1 Specifics */
+  .slide-1-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    height: 100%;
+    gap: 1.25rem;
+  }
+
+  h1 {
+    font-family: var(--font-heading);
+    font-size: 3.2rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: #F8FAFC;
+    text-transform: uppercase;
+  }
+
+  .hero-image {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    filter: grayscale(20%) contrast(110%);
+    border: 1px solid var(--surface-border);
+  }
+
+  .hero-text {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    max-width: 280px;
+    line-height: 1.5;
+  }
+
+  .progress-indicator {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    border-top: 1px solid var(--surface-border);
+    padding-top: 1rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Slide 2 Specifics */
+  .loop-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .loop-node {
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    padding: 0.65rem 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .loop-node.active {
+    border-color: var(--accent);
+    background: rgba(30, 41, 59, 0.85);
+  }
+
+  .loop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .loop-title {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  .loop-arrow {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    line-height: 0.8;
+  }
+
+  .loop-details {
+    display: none;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--surface-border);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .loop-node.active .loop-details {
+    display: block;
+  }
+
+  .loop-details strong {
+    color: var(--accent);
+    display: block;
+    margin-top: 0.25rem;
+  }
+
+  /* Slide 3 Specifics */
+  .day-selector-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .day-selector-bar label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+  }
+
+  .day-selector-bar select {
+    background: var(--surface);
+    color: var(--text-main);
+    border: 1px solid var(--surface-border);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    outline: none;
+    flex: 1;
+  }
+
+  .phase-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .phase-card {
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    padding: 0.75rem;
+  }
+
+  .phase-card.active-phase {
+    border-color: rgba(56, 189, 248, 0.4);
+  }
+
+  .phase-header {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    margin-bottom: 0.35rem;
+    color: var(--accent);
+  }
+
+  .phase-task {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .phase-check-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--surface-border);
+    color: var(--text-main);
+    padding: 0.35rem;
+    font-size: 0.7rem;
+    font-family: var(--font-heading);
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  .phase-check-btn.completed {
+    background: var(--accent);
+    color: #0F172A;
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+
+  .overall-progress-bar {
+    height: 4px;
+    width: 100%;
+    background: rgba(255,255,255,0.1);
+    margin-top: 0.5rem;
+  }
+
+  .overall-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width 0.3s ease;
+  }
+
+  /* Slide 4 Specifics */
+  .s4-title {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+
+  .s4-conclusion {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+
+  .checkbox-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .checkbox-item {
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    padding: 0.4rem 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.7rem;
+    cursor: pointer;
+  }
+
+  .checkbox-item input {
+    accent-color: var(--accent);
+  }
+
+  .sync-textbox {
+    width: 100%;
+    height: 42px;
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    color: var(--text-main);
+    padding: 0.4rem;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    resize: none;
+    outline: none;
+    margin-bottom: 0.5rem;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
+  }
+
+  .metric-box {
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    padding: 0.35rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .metric-box label {
+    font-size: 0.62rem;
+    font-family: var(--font-heading);
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .metric-box input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+    height: 3px;
+  }
+
+  .metric-box select {
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    font-size: 0.7rem;
+    outline: none;
+  }
+
+  .metric-val {
+    font-size: 0.65rem;
+    color: var(--accent);
+    text-align: right;
+  }
+
+  /* Desktop layout tweaks */
+  @media (min-width: 600px) {
+    .snap-container {
+      padding: 0;
+    }
+    .slide {
+      height: 85vh;
+      margin: 7.5vh auto;
+      border-radius: 4px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="snap-container">
+
+  <!-- SLIDE 1: START -->
+  <section class="slide" id="slide-1">
+    <div class="slide-1-content">
+      <h1>30 DAYS</h1>
+      
+      <!-- Minimalist geometric base64 SVG embedded image -->
+      <img class="hero-image" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzA4MEMxNCIvPjBjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzM4QkRGIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjQgNCIvPjBjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0YzRjRGNSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48cG9seWdvbiBwb2ludHM9IjEwMCw2MCAxMTUsOTUgMTAwLDEzMCA4NSw5NSIgZmlsbD0iIzM4QkRGIiBvcGFjaXR5PSIwLjgiLz48L3N2Zz4=" alt="System Loop Blueprint">
+      
+      <div class="hero-text">Train the loop.</div>
+      
+      <div class="subtitle">Ritual → Action → Effort → Reward → Recovery</div>
+    </div>
+    
+    <div class="progress-indicator">DAY 01 / 30</div>
+  </section>
+
+  <!-- SLIDE 2: THE DAILY LOOP -->
+  <section class="slide" id="slide-2">
+    <div class="loop-container">
+      
+      <div class="loop-node" onclick="toggleLoop(this)">
+        <div class="loop-header">
+          <span class="loop-title">RITUAL</span>
+          <span style="font-size:0.7rem; color:var(--text-muted)">01</span>
+        </div>
+        <div class="loop-details">
+          Anchors attention and signals neural transition into an active state without cognitive friction.
+          <strong>Task: 10 minutes morning light exposure & hydration.</strong>
+        </div>
+      </div>
+
+      <div class="loop-arrow">↓</div>
+
+      <div class="loop-node" onclick="toggleLoop(this)">
+        <div class="loop-header">
+          <span class="loop-title">EXERCISE</span>
+          <span style="font-size:0.7rem; color:var(--text-muted)">02</span>
+        </div>
+        <div class="loop-details">
+          Provides controlled mechanical stress to prime circulation and neuroplasticity.
+          <strong>Task: 20 minutes moderate resistance or stair climbing.</strong>
+        </div>
+      </div>
+
+      <div class="loop-arrow">↓</div>
+
+      <div class="loop-node" onclick="toggleLoop(this)">
+        <div class="loop-header">
+          <span class="loop-title">CONTROLLED ABSTINENCE</span>
+          <span style="font-size:0.7rem; color:var(--text-muted)">03</span>
+        </div>
+        <div class="loop-details">
+          Protects dopamine baseline sensitivity by delaying passive high-stimulation impulses.
+          <strong>Task: Delay cheap digital rewards until primary tasks complete.</strong>
+        </div>
+      </div>
+
+      <div class="loop-arrow">↓</div>
+
+      <div class="loop-node" onclick="toggleLoop(this)">
+        <div class="loop-header">
+          <span class="loop-title">TASK COMPLETION</span>
+          <span style="font-size:0.7rem; color:var(--text-muted)">04</span>
+        </div>
+        <div class="loop-details">
+          Directs focused effort toward tangible, high-value outcomes.
+          <strong>Task: Finish one critical objective before non-essential leisure.</strong>
+        </div>
+      </div>
+
+      <div class="loop-arrow">↓</div>
+
+      <div class="loop-node" onclick="toggleLoop(this)">
+        <div class="loop-header">
+          <span class="loop-title">REWARD</span>
+          <span style="font-size:0.7rem; color:var(--text-muted)">05</span>
+        </div>
+        <div class="loop-details">
+          Earned feedback mechanism reinforcing preceding exertion.
+          <strong>Task: Enjoy planned leisure, music, or high-quality downtime.</strong>
+        </div>
+      </div>
+
+      <div class="loop-arrow">↓</div>
+
+      <div class="loop-node" onclick="toggleLoop(this)">
+        <div class="loop-header">
+          <span class="loop-title">RECOVERY</span>
+          <span style="font-size:0.7rem; color:var(--text-muted)">06</span>
+        </div>
+        <div class="loop-details">
+          Downregulates autonomic nervous system to allow tissue repair and memory consolidation.
+          <strong>Task: Standardize evening wind-down and consistent sleep window.</strong>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SLIDE 3: 30-DAY PROGRESSION -->
+  <section class="slide" id="slide-3">
+    <div class="day-selector-bar">
+      <label for="daySelect">ACTIVE DAY:</label>
+      <select id="daySelect" onchange="changeDay(this.value)">
+        <!-- Generated dynamically via JS -->
+      </select>
+    </div>
+
+    <div class="phase-container">
+      
+      <div class="phase-card" id="phase-1">
+        <div class="phase-header">
+          <span>DAYS 01–07</span>
+          <span>ACTIVATE</span>
+        </div>
+        <div class="phase-task">
+          Focus on establishing baseline consistency: morning sunlight exposure, brisk walking, and preparing tomorrow's task outline each evening.
+        </div>
+        <button class="phase-check-btn" onclick="toggleDayCompletion(1)">Mark Day Complete</button>
+      </div>
+
+      <div class="phase-card" id="phase-2">
+        <div class="phase-header">
+          <span>DAYS 08–14</span>
+          <span>BUILD</span>
+        </div>
+        <div class="phase-task">
+          Escalate resistance exercises, include targeted stair climbing, and strictly delay selected immediate-reward digital distractions.
+        </div>
+        <button class="phase-check-btn" onclick="toggleDayCompletion(2)">Mark Day Complete</button>
+      </div>
+
+      <div class="phase-card" id="phase-3">
+        <div class="phase-header">
+          <span>DAYS 15–21</span>
+          <span>CHALLENGE</span>
+        </div>
+        <div class="phase-task">
+          Complete mandatory deep-work task prior to any entertainment. Maintain structured sleep/recovery rituals consistently.
+        </div>
+        <button class="phase-check-btn" onclick="toggleDayCompletion(3)">Mark Day Complete</button>
+      </div>
+
+      <div class="phase-card" id="phase-4">
+        <div class="phase-header">
+          <span>DAYS 22–30</span>
+          <span>CONSOLIDATE</span>
+        </div>
+        <div class="phase-task">
+          Seamlessly integrate physical exertion, impulse friction, and deliberate recovery into an automatic daily operating rhythm.
+        </div>
+        <button class="phase-check-btn" onclick="toggleDayCompletion(4)">Mark Day Complete</button>
+      </div>
+
+    </div>
+
+    <div>
+      <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:var(--text-muted); font-family:var(--font-heading); margin-top:0.25rem;">
+        <span>ACCUMULATED PROGRESS</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="overall-progress-bar">
+        <div class="overall-progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 4: CONCLUSION + TRACKING -->
+  <section class="slide" id="slide-4">
+    <div>
+      <div class="s4-title">WHAT CHANGES?</div>
+      <div class="s4-conclusion">
+        The objective is not constant stimulation. It is learning to connect effort, anticipation, reward and recovery.
+      </div>
+    </div>
+
+    <!-- Exact 4 Checkboxes with VAR KEY = "sync".v1 -->
+    <div class="checkbox-grid">
+      <label class="checkbox-item">
+        <input type="checkbox" id="sync.v1_ritual" onchange="saveSyncState()">
+        <span>Daily ritual completed</span>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="sync.v1_exercise" onchange="saveSyncState()">
+        <span>Exercise completed</span>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="sync.v1_abstinence" onchange="saveSyncState()">
+        <span>Controlled abstinence completed</span>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" id="sync.v1_recovery" onchange="saveSyncState()">
+        <span>Recovery completed</span>
+      </label>
+    </div>
+
+    <!-- Text box with synchronization variable: sync -->
+    <textarea class="sync-textbox" id="sync" placeholder="Short daily reflection..." oninput="saveSyncState()"></textarea>
+
+    <!-- Compact Daily Measurement Area (Observational) -->
+    <div class="metrics-grid">
+      <div class="metric-box">
+        <div style="display:flex; justify-content:space-between;">
+          <label>REWARD</label>
+          <span class="metric-val" id="val-reward">5</span>
+        </div>
+        <input type="range" min="0" max="10" value="5" id="metric-reward" oninput="updateMetric('reward', this.value)">
+      </div>
+
+      <div class="metric-box">
+        <div style="display:flex; justify-content:space-between;">
+          <label>LIBIDO</label>
+          <span class="metric-val" id="val-libido">5</span>
+        </div>
+        <input type="range" min="0" max="10" value="5" id="metric-libido" oninput="updateMetric('libido', this.value)">
+      </div>
+
+      <div class="metric-box">
+        <div style="display:flex; justify-content:space-between;">
+          <label>ERECTION QUALITY</label>
+          <span class="metric-val" id="val-erection">5</span>
+        </div>
+        <input type="range" min="0" max="10" value="5" id="metric-erection" oninput="updateMetric('erection', this.value)">
+      </div>
+
+      <div class="metric-box">
+        <div style="display:flex; justify-content:space-between;">
+          <label>ENERGY</label>
+          <span class="metric-val" id="val-energy">5</span>
+        </div>
+        <input type="range" min="0" max="10" value="5" id="metric-energy" oninput="updateMetric('energy', this.value)">
+      </div>
+
+      <div class="metric-box" style="grid-column: span 2;">
+        <label>SLEEP</label>
+        <select id="metric-sleep" onchange="updateMetric('sleep', this.value)">
+          <option value="Restful / Complete">Restful / Complete</option>
+          <option value="Moderate / Disrupted">Moderate / Disrupted</option>
+          <option value="Insufficient">Insufficient</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  let currentDay = 1;
+  const STORAGE_KEY = 'reward_system_30d_state';
+
+  // Load baseline state
+  let state = {
+    completedDays: {},
+    sync_v1: {
+      ritual: false,
+      exercise: false,
+      abstinence: false,
+      recovery: false
+    },
+    syncText: '',
+    metrics: {
+      reward: 5,
+      libido: 5,
+      erection: 5,
+      energy: 5,
+      sleep: 'Restful / Complete'
+    }
+  };
+
+  function init() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try { state = Object.assign(state, JSON.parse(saved)); } catch(e){}
+    }
+
+    // Populate day selector dropdown (1-30)
+    const select = document.getElementById('daySelect');
+    select.innerHTML = '';
+    for (let i = 1; i <= 30; i++) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = `DAY ${i < 10 ? '0' + i : i} ${state.completedDays[i] ? '✓' : ''}`;
+      select.appendChild(opt);
+    }
+
+    renderSyncState();
+    renderProgress();
+    updateActivePhaseUI();
+  }
+
+  function saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function toggleLoop(element) {
+    const isActive = element.classList.contains('active');
+    document.querySelectorAll('.loop-node').forEach(node => node.classList.remove('active'));
+    if (!isActive) {
+      element.classList.add('active');
+    }
+  }
+
+  function changeDay(day) {
+    currentDay = parseInt(day, 10);
+    updateActivePhaseUI();
+  }
+
+  function updateActivePhaseUI() {
+    document.querySelectorAll('.phase-card').forEach(card => card.classList.remove('active-phase'));
+    
+    let activePhaseId = 1;
+    if (currentDay >= 8 && currentDay <= 14) activePhaseId = 2;
+    else if (currentDay >= 15 && currentDay <= 21) activePhaseId = 3;
+    else if (currentDay >= 22) activePhaseId = 4;
+
+    const activeCard = document.getElementById(`phase-${activePhaseId}`);
+    if (activeCard) {
+      activeCard.classList.add('active-phase');
+    }
+
+    // Update button visual state for current day
+    const btn = activeCard.querySelector('.phase-check-btn');
+    if (state.completedDays[currentDay]) {
+      btn.classList.add('completed');
+      btn.textContent = `Day ${currentDay} Completed ✓`;
+    } else {
+      btn.classList.remove('completed');
+      btn.textContent = `Mark Day ${currentDay} Complete`;
+    }
+  }
+
+  function toggleDayCompletion(phaseId) {
+    state.completedDays[currentDay] = !state.completedDays[currentDay];
+    saveState();
+    
+    // Update select dropdown labels
+    const select = document.getElementById('daySelect');
+    const option = select.options[currentDay - 1];
+    option.textContent = `DAY ${currentDay < 10 ? '0' + currentDay : currentDay} ${state.completedDays[currentDay] ? '✓' : ''}`;
+
+    updateActivePhaseUI();
+    renderProgress();
+  }
+
+  function renderProgress() {
+    const completedCount = Object.keys(state.completedDays).filter(k => state.completedDays[k]).length;
+    const pct = Math.round((completedCount / 30) * 100);
+    document.getElementById('progressPercent').textContent = `${pct}%`;
+    document.getElementById('progressFill').style.width = `${pct}%`;
+  }
+
+  /* Handle exact key VAR KEY = "sync".v1 */
+  function saveSyncState() {
+    state.sync_v1.ritual = document.getElementById('sync.v1_ritual').checked;
+    state.sync_v1.exercise = document.getElementById('sync.v1_exercise').checked;
+    state.sync_v1.abstinence = document.getElementById('sync.v1_abstinence').checked;
+    state.sync_v1.recovery = document.getElementById('sync.v1_recovery').checked;
+    
+    state.syncText = document.getElementById('sync').value;
+    saveState();
+  }
+
+  function renderSyncState() {
+    document.getElementById('sync.v1_ritual').checked = !!state.sync_v1.ritual;
+    document.getElementById('sync.v1_exercise').checked = !!state.sync_v1.exercise;
+    document.getElementById('sync.v1_abstinence').checked = !!state.sync_v1.abstinence;
+    document.getElementById('sync.v1_recovery').checked = !!state.sync_v1.recovery;
+    
+    document.getElementById('sync').value = state.syncText || '';
+
+    // Render Metrics
+    if (state.metrics) {
+      for (let key in state.metrics) {
+        const el = document.getElementById(`metric-${key}`);
+        if (el) {
+          el.value = state.metrics[key];
+          const valDisplay = document.getElementById(`val-${key}`);
+          if (valDisplay) valDisplay.textContent = state.metrics[key];
+        }
+      }
+    }
+  }
+
+  function updateMetric(key, val) {
+    if (!state.metrics) state.metrics = {};
+    state.metrics[key] = val;
+    const valDisplay = document.getElementById(`val-${key}`);
+    if (valDisplay) valDisplay.textContent = val;
+    saveState();
+  }
+
+  window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
